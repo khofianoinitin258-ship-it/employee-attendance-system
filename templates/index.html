@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Phase 2 - Foundation{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body p-5 text-center">
+    <h1 class="h3 mb-3">Foundation is ready</h1>
+    <p class="text-muted">
+      Flask, MariaDB and the Ghana timezone are configured.
+    </p>
+    <a href="{{ url_for('main.health') }}" class="btn btn-primary">Check system health</a>
+  </div>
+</div>
+{% endblock %}
