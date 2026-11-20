@@ -14,6 +14,7 @@
       <div class="d-flex align-items-center gap-3">
         {% if current_user %}
           <a class="nav-link text-white" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+          <a class="nav-link text-white" href="{{ url_for('attendance.attendance_page') }}">Attendance</a>
           {% if current_user.role == 'admin' %}
             <a class="nav-link text-white" href="{{ url_for('admin.employees') }}">Employees</a>
             <a class="nav-link text-white" href="{{ url_for('admin.departments') }}">Departments</a>
