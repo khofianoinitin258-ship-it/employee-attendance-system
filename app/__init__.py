@@ -7,6 +7,7 @@ from flask import Flask, render_template
 
 from config import Config
 
+from .admin import admin_bp
 from .auth import auth_bp
 from .db import init_app as init_db
 from .routes import main_bp
@@ -25,6 +26,7 @@ def create_app():
     init_db(app)
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
 
     @app.errorhandler(403)
     def forbidden(error):
