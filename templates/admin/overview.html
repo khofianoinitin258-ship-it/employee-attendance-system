@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance overview{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Today's attendance</h1>
+  <span class="text-muted">{{ today.strftime('%A, %d %B %Y') }}</span>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-6 col-lg-3">
+    <div class="card text-bg-primary">
+      <div class="card-body">
+        <div class="h2 mb-0">{{ stats.total_active }}</div>
+        <div class="small">Active employees</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card text-bg-success">
+      <div class="card-body">
+        <div class="h2 mb-0">{{ stats.present }}</div>
+        <div class="small">Present</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card text-bg-warning">
+      <div class="card-body">
+        <div class="h2 mb-0">{{ stats.late }}</div>
+        <div class="small">Late</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-lg-3">
+    <div class="card text-bg-secondary">
+      <div class="card-body">
+        <div class="h2 mb-0">{{ stats.absent }}</div>
+        <div class="small">Not clocked in</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Employee</th>
+          <th>Department</th>
+          <th>Clock in</th>
+          <th>Clock out</th>
+          <th>Hours</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in records %}
+          <tr>
+            <td><code>{{ item.employee_code }}</code> {{ item.full_name }}</td>
+            <td>{{ item.department_name or '-' }}</td>
+            <td>{{ item.clock_in.strftime('%H:%M') if item.clock_in else '-' }}</td>
+            <td>{{ item.clock_out.strftime('%H:%M') if item.clock_out else '-' }}</td>
+            <td>{{ item.hours_worked if item.hours_worked is not none else '-' }}</td>
+            <td>
+              {% if item.status == 'present' %}
+                <span class="badge bg-success">Present</span>
+              {% elif item.status == 'late' %}
+                <span class="badge bg-warning text-dark">Late</span>
+              {% else %}
+                <span class="badge bg-secondary">Absent</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="6" class="text-center text-muted py-4">No active employees yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

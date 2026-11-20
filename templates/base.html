@@ -16,8 +16,10 @@
           <a class="nav-link text-white" href="{{ url_for('main.dashboard') }}">Dashboard</a>
           <a class="nav-link text-white" href="{{ url_for('attendance.attendance_page') }}">Attendance</a>
           {% if current_user.role == 'admin' %}
+            <a class="nav-link text-white" href="{{ url_for('admin.overview') }}">Overview</a>
             <a class="nav-link text-white" href="{{ url_for('admin.employees') }}">Employees</a>
             <a class="nav-link text-white" href="{{ url_for('admin.departments') }}">Departments</a>
+            <a class="nav-link text-white" href="{{ url_for('admin.settings') }}">Settings</a>
           {% endif %}
           <span class="text-white-50 small">{{ current_user.username }}</span>
           <form method="post" action="{{ url_for('auth.logout') }}" class="m-0">

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<h1 class="h3 mb-4">Working hours &amp; timezone</h1>
+
+{% if errors %}
+  <div class="alert alert-danger">
+    <ul class="mb-0">
+      {% for error in errors %}<li>{{ error }}</li>{% endfor %}
+    </ul>
+  </div>
+{% endif %}
+
+<div class="card shadow-sm" style="max-width: 620px;">
+  <div class="card-body">
+    <form method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="row g-3">
+        <div class="col-sm-6">
+          <label for="work_start_time" class="form-label">Work starts at</label>
+          <input type="time" class="form-control" id="work_start_time" name="work_start_time"
+                 value="{{ settings.work_start_time|string }}">
+        </div>
+        <div class="col-sm-6">
+          <label for="work_end_time" class="form-label">Work ends at</label>
+          <input type="time" class="form-control" id="work_end_time" name="work_end_time"
+                 value="{{ settings.work_end_time|string }}">
+        </div>
+        <div class="col-12">
+          <label for="timezone" class="form-label">Timezone</label>
+          <input type="text" class="form-control" id="timezone" name="timezone"
+                 list="timezone-options" value="{{ settings.timezone }}" required>
+          <datalist id="timezone-options">
+            <option value="Africa/Accra">
+            <option value="UTC">
+            <option value="Africa/Lagos">
+            <option value="Europe/London">
+            <option value="America/New_York">
+          </datalist>
+          <div class="form-text">Times are interpreted in this timezone.</div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-4">Save settings</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

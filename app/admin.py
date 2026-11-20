@@ -1,5 +1,7 @@
 """Administrator-only pages for managing employees and departments."""
 import re
+from datetime import time
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import pymysql
 from flask import (
@@ -13,6 +15,7 @@ from flask import (
 )
 from werkzeug.security import generate_password_hash
 
+from .attendance import now_naive
 from .auth import validate_csrf
 from .db import get_db
 from .decorators import admin_required
@@ -361,3 +364,111 @@ def delete_department(department_id):
     db.commit()
     flash("Department deleted.", "success")
     return redirect(url_for("admin.departments"))
+
+
+@admin_bp.route("/")
+@admin_required
+def overview():
+    """Today's attendance summary for administrators."""
+    db = get_db()
+    today = now_naive().date()
+
+    with db.cursor() as cursor:
+        cursor.execute("SELECT COUNT(*) AS total FROM employees WHERE is_active = 1")
+        total_active = cursor.fetchone()["total"]
+
+        cursor.execute(
+            """SELECT
+                 COUNT(*) AS recorded,
+                 COALESCE(SUM(status = 'present'), 0) AS present,
+                 COALESCE(SUM(status = 'late'), 0) AS late,
+                 COALESCE(SUM(clock_out IS NOT NULL), 0) AS completed
+               FROM attendance_records ar
+               JOIN employees e ON e.id = ar.employee_id
+               WHERE ar.work_date = %s AND e.is_active = 1""",
+            (today,),
+        )
+        stats = cursor.fetchone()
+
+        cursor.execute(
+            """SELECT e.id, e.employee_code,
+                      CONCAT(e.first_name, ' ', e.last_name) AS full_name,
+                      d.name AS department_name,
+                      ar.status, ar.clock_in, ar.clock_out, ar.hours_worked
+               FROM employees e
+               LEFT JOIN departments d ON d.id = e.department_id
+               LEFT JOIN attendance_records ar
+                    ON ar.employee_id = e.id AND ar.work_date = %s
+               WHERE e.is_active = 1
+               ORDER BY e.last_name, e.first_name""",
+            (today,),
+        )
+        records = cursor.fetchall()
+
+    stats["absent"] = total_active - stats["recorded"]
+    stats["total_active"] = total_active
+
+    return render_template("admin/overview.html", stats=stats, records=records, today=today)
+
+
+def parse_hhmm(value):
+    """Turn '08:30' into a datetime.time, or return None if invalid."""
+    try:
+        hour_text, minute_text = value.split(":")
+        return time(int(hour_text), int(minute_text))
+    except (ValueError, AttributeError):
+        return None
+
+
+@admin_bp.route("/settings", methods=["GET", "POST"])
+@admin_required
+def settings():
+    db = get_db()
+    settings_row = get_settings_from_db(db)
+
+    if request.method == "POST":
+        validate_csrf()
+        start = parse_hhmm(request.form.get("work_start_time", ""))
+        end = parse_hhmm(request.form.get("work_end_time", ""))
+        timezone_name = request.form.get("timezone", "").strip()
+
+        errors = []
+        if start is None or end is None:
+            errors.append("Enter both times in HH:MM format.")
+        elif start >= end:
+            errors.append("Start time must be before end time.")
+        if not timezone_name:
+            errors.append("Timezone is required.")
+        else:
+            try:
+                ZoneInfo(timezone_name)
+            except (ZoneInfoNotFoundError, ValueError):
+                errors.append("That timezone is not recognised.")
+
+        if errors:
+            return render_template(
+                "admin/settings.html", settings=settings_row, errors=errors
+            ), 400
+
+        with db.cursor() as cursor:
+            cursor.execute(
+                """UPDATE system_settings
+                   SET work_start_time = %s, work_end_time = %s, timezone = %s
+                   WHERE id = 1""",
+                (
+                    start.strftime("%H:%M:%S"),
+                    end.strftime("%H:%M:%S"),
+                    timezone_name,
+                ),
+            )
+        db.commit()
+        flash("Working hours updated. Changes apply to new clock-ins.", "success")
+        return redirect(url_for("admin.settings"))
+
+    return render_template("admin/settings.html", settings=settings_row, errors=[])
+
+
+def get_settings_from_db(db):
+    with db.cursor() as cursor:
+        cursor.execute("SELECT * FROM system_settings WHERE id = 1")
+        return cursor.fetchone()
