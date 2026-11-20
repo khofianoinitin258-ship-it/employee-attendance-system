@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 from flask import Blueprint, current_app, jsonify, render_template
 
 from .db import get_db
+from .decorators import admin_required, login_required
 
 main_bp = Blueprint("main", __name__)
 
@@ -13,6 +14,20 @@ main_bp = Blueprint("main", __name__)
 def home():
     """Simple landing page to confirm the app renders templates."""
     return render_template("index.html")
+
+
+@main_bp.route("/dashboard")
+@login_required
+def dashboard():
+    """Landing page after a successful login."""
+    return render_template("dashboard.html")
+
+
+@main_bp.route("/admin/ping")
+@admin_required
+def admin_ping():
+    """Tiny admin-only endpoint used to test role protection."""
+    return jsonify(ok=True)
 
 
 @main_bp.route("/health")
