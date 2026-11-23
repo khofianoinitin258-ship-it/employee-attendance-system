@@ -11,6 +11,7 @@ from .admin import admin_bp
 from .attendance import attendance_bp
 from .auth import auth_bp
 from .db import init_app as init_db
+from .reports import reports_bp
 from .routes import main_bp
 
 
@@ -29,6 +30,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(attendance_bp)
+    app.register_blueprint(reports_bp)
 
     @app.errorhandler(403)
     def forbidden(error):

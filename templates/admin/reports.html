@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h3 mb-1">Attendance reports</h1>
+    <p class="text-muted mb-0">{{ title }}</p>
+  </div>
+  <a class="btn btn-outline-primary"
+     href="{{ url_for('reports.index', type=report_type, date=selected_date.isoformat(), employee_id=employee_id, export='csv') }}">
+    Export CSV
+  </a>
+</div>
+
+<form method="get" class="card card-body shadow-sm mb-4">
+  <div class="row g-3 align-items-end">
+    <div class="col-md-3">
+      <label class="form-label" for="type">Report type</label>
+      <select class="form-select" id="type" name="type">
+        {% for value, label in report_types.items() %}
+          <option value="{{ value }}" {% if value == report_type %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="date">Date</label>
+      <input class="form-control" id="date" name="date" type="date" value="{{ selected_date.isoformat() }}">
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="employee_id">Employee (for individual report)</label>
+      <select class="form-select" id="employee_id" name="employee_id">
+        <option value="">-- All / select employee --</option>
+        {% for employee in employees %}
+          <option value="{{ employee.id }}" {% if employee.id == employee_id %}selected{% endif %}>
+            {{ employee.employee_code }} - {{ employee.full_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Run report</button>
+    </div>
+  </div>
+</form>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Date</th>
+          <th>Employee</th>
+          <th>Department</th>
+          <th>Status</th>
+          <th>Clock in</th>
+          <th>Clock out</th>
+          <th>Hours</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+          {% set status = row.status or 'absent' %}
+          <tr>
+            <td>{{ row.work_date }}</td>
+            <td><code>{{ row.employee_code }}</code> {{ row.full_name }}</td>
+            <td>{{ row.department_name or '-' }}</td>
+            <td>
+              <span class="badge bg-{{ 'warning' if status == 'late' else 'success' if status == 'present' else 'secondary' }}">
+                {{ status|capitalize }}
+              </span>
+            </td>
+            <td>{{ row.clock_in.strftime('%H:%M') if row.clock_in else '-' }}</td>
+            <td>{{ row.clock_out.strftime('%H:%M') if row.clock_out else '-' }}</td>
+            <td>{{ row.hours_worked if row.hours_worked is not none else '-' }}</td>
+          </tr>
+        {% else %}
+          <tr><td colspan="7" class="text-center text-muted py-4">No records for this report.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
