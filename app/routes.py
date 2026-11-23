@@ -2,8 +2,9 @@
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from flask import Blueprint, current_app, jsonify, render_template
+from flask import Blueprint, current_app, jsonify, render_template, session
 
+from .attendance import get_settings, get_today_record, now_naive
 from .db import get_db
 from .decorators import admin_required, login_required
 
@@ -19,8 +20,56 @@ def home():
 @main_bp.route("/dashboard")
 @login_required
 def dashboard():
-    """Landing page after a successful login."""
-    return render_template("dashboard.html")
+    """Role-aware landing page after login."""
+    db = get_db()
+    context = {}
+
+    if session.get("role") == "admin":
+        today = now_naive().date()
+        with db.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) AS total FROM employees WHERE is_active = 1")
+            context["total_active"] = cursor.fetchone()["total"]
+            cursor.execute(
+                """SELECT
+                     COALESCE(SUM(status = 'present'), 0) AS present,
+                     COALESCE(SUM(status = 'late'), 0) AS late
+                   FROM attendance_records ar
+                   JOIN employees e ON e.id = ar.employee_id
+                   WHERE ar.work_date = %s AND e.is_active = 1""",
+                (today,),
+            )
+            counts = cursor.fetchone()
+        context["present"] = counts["present"]
+        context["late"] = counts["late"]
+        context["absent"] = context["total_active"] - counts["present"] - counts["late"]
+    else:
+        employee_id = session.get("employee_id")
+        if employee_id:
+            today = now_naive().date()
+            context["record"] = get_today_record(db, employee_id, today)
+            context["settings"] = get_settings(db)
+
+    return render_template("dashboard.html", **context)
+
+
+@main_bp.route("/profile")
+@login_required
+def profile():
+    """Show the logged-in user's personal profile."""
+    db = get_db()
+    employee = None
+    employee_id = session.get("employee_id")
+    if employee_id:
+        with db.cursor() as cursor:
+            cursor.execute(
+                """SELECT e.*, d.name AS department_name
+                   FROM employees e
+                   LEFT JOIN departments d ON d.id = e.department_id
+                   WHERE e.id = %s""",
+                (employee_id,),
+            )
+            employee = cursor.fetchone()
+    return render_template("profile.html", employee=employee)
 
 
 @main_bp.route("/admin/ping")
