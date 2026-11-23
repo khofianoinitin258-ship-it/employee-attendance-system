@@ -1,30 +1,30 @@
-:root,
+﻿:root,
 [data-bs-theme="light"] {
-  --brand: #0d6efd;
-  --brand-dark: #0b3d91;
-  --glass: rgba(255, 255, 255, 0.88);
-  --glass-border: rgba(255, 255, 255, 0.45);
-  --text-main: #182230;
-  --muted: #5b6778;
-  --hero-overlay-a: rgba(7, 20, 48, 0.78);
-  --hero-overlay-b: rgba(13, 110, 253, 0.35);
-  --nav-bg: rgba(10, 24, 52, 0.72);
-  --card-shadow: 0 10px 30px rgba(8, 24, 55, 0.12);
-  --input-bg: rgba(255,255,255,0.9);
+  --brand: #198754;
+  --brand-dark: #146c43;
+  --glass: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(20, 108, 67, 0.12);
+  --text-main: #111111;
+  --muted: #4b5563;
+  --hero-overlay-a: rgba(17, 17, 17, 0.72);
+  --hero-overlay-b: rgba(25, 135, 84, 0.32);
+  --nav-bg: rgba(17, 17, 17, 0.88);
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.10);
+  --input-bg: rgba(255,255,255,0.96);
 }
 
 [data-bs-theme="dark"] {
-  --brand: #6ea8fe;
-  --brand-dark: #9ec5fe;
-  --glass: rgba(20, 30, 48, 0.82);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --text-main: #e8eef8;
-  --muted: #aab7c7;
-  --hero-overlay-a: rgba(2, 8, 20, 0.84);
-  --hero-overlay-b: rgba(13, 60, 140, 0.45);
-  --nav-bg: rgba(8, 14, 28, 0.78);
-  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --input-bg: rgba(18, 28, 44, 0.9);
+  --brand: #2fb36d;
+  --brand-dark: #8fe0b5;
+  --glass: rgba(20, 20, 20, 0.86);
+  --glass-border: rgba(47, 179, 109, 0.18);
+  --text-main: #f3f7f4;
+  --muted: #b6c2bb;
+  --hero-overlay-a: rgba(0, 0, 0, 0.82);
+  --hero-overlay-b: rgba(25, 135, 84, 0.35);
+  --nav-bg: rgba(10, 10, 10, 0.92);
+  --card-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --input-bg: rgba(28, 28, 28, 0.95);
 }
 
 body.app-body {
@@ -49,7 +49,7 @@ body.app-body {
 }
 
 .brand-mark { letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 0.55rem; }
-.brand-dot { width: 12px; height: 12px; border-radius: 50%; background: linear-gradient(135deg, #6ec1ff, #0d6efd); box-shadow: 0 0 0 4px rgba(13,110,253,0.18); display: inline-block; }
+.brand-dot { width: 12px; height: 12px; border-radius: 50%; background: linear-gradient(135deg, #8fe0b5, #198754); box-shadow: 0 0 0 4px rgba(25,135,84,0.20); display: inline-block; }
 .page-shell { position: relative; z-index: 1; }
 
 .card, .table-responsive {
@@ -77,13 +77,13 @@ body.app-body {
 
 .table { --bs-table-bg: transparent; color: var(--text-main); }
 .table-light, .table thead th {
-  --bs-table-bg: rgba(13,110,253,0.08);
+  --bs-table-bg: rgba(25,135,84,0.10);
   --bs-table-color: var(--text-main);
   color: var(--text-main);
 }
 [data-bs-theme="dark"] .table-light,
 [data-bs-theme="dark"] .table thead th {
-  --bs-table-bg: rgba(110,168,254,0.12);
+  --bs-table-bg: rgba(117,183,152,0.14);
 }
 
 .text-muted, .form-text { color: var(--muted) !important; }
@@ -98,8 +98,37 @@ body.app-body {
   color: var(--text-main);
 }
 
-[data-bs-theme="dark"] .btn-outline-primary { color: #9ec5fe; border-color: #6ea8fe; }
-[data-bs-theme="dark"] .btn-outline-primary:hover { color: #08162f; background: #9ec5fe; }
+.btn-primary {
+  --bs-btn-bg: #198754;
+  --bs-btn-border-color: #198754;
+  --bs-btn-hover-bg: #146c43;
+  --bs-btn-hover-border-color: #146c43;
+  --bs-btn-active-bg: #115c39;
+  --bs-btn-active-border-color: #115c39;
+}
+.btn-outline-primary {
+  --bs-btn-color: #198754;
+  --bs-btn-border-color: #198754;
+  --bs-btn-hover-bg: #198754;
+  --bs-btn-hover-border-color: #198754;
+  --bs-btn-active-bg: #146c43;
+  --bs-btn-active-border-color: #146c43;
+}
+[data-bs-theme="dark"] .btn-primary {
+  --bs-btn-color: #111;
+  --bs-btn-bg: #2fb36d;
+  --bs-btn-border-color: #2fb36d;
+  --bs-btn-hover-color: #111;
+  --bs-btn-hover-bg: #4acb85;
+  --bs-btn-hover-border-color: #4acb85;
+}
+[data-bs-theme="dark"] .btn-outline-primary {
+  --bs-btn-color: #8fe0b5;
+  --bs-btn-border-color: #2fb36d;
+  --bs-btn-hover-color: #111;
+  --bs-btn-hover-bg: #2fb36d;
+  --bs-btn-hover-border-color: #2fb36d;
+}
 [data-bs-theme="dark"] .alert { border-color: rgba(255,255,255,0.08); }
 
 .site-footer { position: relative; z-index: 1; }
@@ -108,3 +137,4 @@ body.app-body {
   .app-navbar .container { gap: .75rem; }
   .app-navbar .d-flex { flex-wrap: wrap; justify-content: flex-start; }
 }
+
