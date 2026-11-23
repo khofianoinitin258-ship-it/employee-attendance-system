@@ -1,15 +1,50 @@
 {% extends "base.html" %}
 
-{% block title %}Phase 2 - Foundation{% endblock %}
+{% block title %}ANOINTIN.LTD - Attendance Management{% endblock %}
 
 {% block content %}
-<div class="card shadow-sm">
-  <div class="card-body p-5 text-center">
-    <h1 class="h3 mb-3">Foundation is ready</h1>
-    <p class="text-muted">
-      Flask, MariaDB and the Ghana timezone are configured.
-    </p>
-    <a href="{{ url_for('main.health') }}" class="btn btn-primary">Check system health</a>
+<div class="card hero-card shadow-sm mb-4">
+  <div class="row g-0 align-items-stretch">
+    <div class="col-lg-7">
+      <div class="card-body p-4 p-lg-5">
+        <div class="hero-kicker mb-2">Welcome to ANOINTIN.LTD</div>
+        <h1 class="display-5 fw-bold mb-3">Modern Employee Attendance Management</h1>
+        <p class="text-muted mb-4">
+          A secure, professional platform for tracking attendance, managing employees,
+          and generating clear reports — built for real organizational use.
+        </p>
+        {% if current_user %}
+          <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg">Go to dashboard</a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">Log in to continue</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-lg-5 hero-image"></div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm"><div class="card-body p-4">
+      <div class="hero-kicker mb-2">Secure Access</div>
+      <h2 class="h5">Role-based control</h2>
+      <p class="text-muted mb-0">Admins and employees get the right tools with protected access.</p>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm"><div class="card-body p-4">
+      <div class="hero-kicker mb-2">Smart Tracking</div>
+      <h2 class="h5">Clock in/out &amp; lateness</h2>
+      <p class="text-muted mb-0">Automatic time tracking, late detection, and daily hours.</p>
+    </div></div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 shadow-sm"><div class="card-body p-4">
+      <div class="hero-kicker mb-2">Clear Reports</div>
+      <h2 class="h5">Insights and CSV export</h2>
+      <p class="text-muted mb-0">Daily to monthly reports, absences, late arrivals, and exports.</p>
+    </div></div>
   </div>
 </div>
 {% endblock %}

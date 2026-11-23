@@ -12,7 +12,7 @@ class SmokeTests(unittest.TestCase):
     def test_home_page_loads(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b"Foundation is ready", response.data)
+        self.assertIn(b"ANOINTIN.LTD", response.data)
 
     def test_health_check_reaches_database(self):
         response = self.client.get("/health")
